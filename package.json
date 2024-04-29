@@ -1,6 +1,6 @@
 {
   "name": "@akiyamka/extended-fetch",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "description": "",
   "type": "module",
   "files": [
@@ -17,7 +17,7 @@
     "test": "tsc --noEmit",
     "dev": "vite",
     "build": "vite build",
-    "publish": "pnpm test && pnpm build && pnpm publish --access public"
+    "release": "pnpm test && pnpm build && pnpm publish --access public"
   },
   "keywords": [
     "fetch",
