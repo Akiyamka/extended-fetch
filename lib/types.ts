@@ -1,27 +1,36 @@
 export type XhrEventLoadStart = {
   type: 'loadstart';
+  payload: ProgressEvent<EventTarget>;
 };
 
 export type XhrEventLoad = {
   type: 'load';
+  payload: ProgressEvent<EventTarget>;
 };
 
 export type XhrEventLoadEnd = {
   type: 'loadend';
+  payload: ProgressEvent<EventTarget>;
 };
 
 export type XhrEventProgress = {
   type: 'progress';
-  payload: unknown;
+  payload: ProgressEvent<EventTarget>;
 };
 
 export type XhrEventError = {
   type: 'error';
-  payload: Error;
+  payload: ProgressEvent<EventTarget>;
 };
 
 export type XhrEventAbort = {
   type: 'abort';
+  payload: ProgressEvent<EventTarget>;
+};
+
+export type XhrEventTimeout = {
+  type: 'timeout';
+  payload: ProgressEvent<EventTarget>;
 };
 
 export type XhrEvent =
@@ -30,7 +39,8 @@ export type XhrEvent =
   | XhrEventLoadEnd
   | XhrEventProgress
   | XhrEventError
-  | XhrEventAbort;
+  | XhrEventAbort
+  | XhrEventTimeout;
 
 export type XhrEventListener = (event: XhrEvent) => void;
 export type ExtendedFetchPreferences = {

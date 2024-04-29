@@ -1,5 +1,6 @@
 import type { ExtendedFetchPreferences } from './types'
 
+const ERROR_MSG_TIMEOUT = 'Network request timed out';
 const g = globalThis
 
 function normalizeName(name: string) {
@@ -45,12 +46,22 @@ function parseHeaders(rawHeaders) {
   return headers
 }
 
+const toXMLHttpRequestBodyInit = async (body?: BodyInit | null): Promise<XMLHttpRequestBodyInit | null> => {
+  if (body === null || body === undefined) return null;
+  if (typeof body === 'string') return body;
+  if ('getReader' in body) {
+    return await new Response(body).blob();
+  }
+  return body
+}
+
 export const fetch = (
   input: RequestInfo | URL,
   init?: RequestInit,
   pref?: ExtendedFetchPreferences
 ) =>
-  new Promise((resolve, reject) => {
+  new Promise(async (resolve, reject) => {
+    const initBody = init?.body;
     const request = new Request(input, init)
 
     if (request.signal && request.signal.aborted) {
@@ -59,7 +70,11 @@ export const fetch = (
 
     const xhr = new XMLHttpRequest()
 
-    xhr.onload = () => {
+    xhr.onloadstart = (event) => {
+      pref?.eventListener?.({ type: 'loadstart', payload: event });
+    }
+
+    xhr.onload = (event) => {
       // This check if specifically for when a user fetches a file locally from the file system
       // Only if the status is out of a normal range
       const isOk =
@@ -81,17 +96,35 @@ export const fetch = (
         'responseURL' in xhr
           ? xhr.responseURL
           : options.headers.get('X-Request-URL')
+
       // @ts-expect-error responseText can be in some implementations
       const body = 'response' in xhr ? xhr.response : xhr.responseText
+      pref?.eventListener?.({ type: 'load', payload: event })
       setTimeout(() => resolve(new Response(body, options)), 0)
     }
 
-    xhr.onerror = () =>
+    xhr.onerror = (event) => {
+      pref?.eventListener?.({ type: 'error', payload: event });
       setTimeout(() => reject(new TypeError('Network request failed')), 0)
-    xhr.ontimeout = () =>
+    }
+
+    xhr.ontimeout = (event) => {
+      pref?.eventListener?.({ type: 'timeout', payload: event });
       setTimeout(() => reject(new TypeError('Network request timed out')), 0)
-    xhr.onabort = () =>
+    }
+
+    xhr.onabort = (event) => {
+      pref?.eventListener?.({ type: 'abort', payload: event });
       setTimeout(() => reject(new DOMException('Aborted', 'AbortError')), 0)
+    }
+
+    xhr.onprogress = (event) => {
+      pref?.eventListener?.({ type: 'progress', payload: event });
+    }
+
+    xhr.onloadend = (event) => {
+      pref?.eventListener?.({ type: 'loadend', payload: event });
+    }
 
     const fixUrl = (url: string) => {
       try {
@@ -103,6 +136,7 @@ export const fetch = (
 
     xhr.open(request.method, fixUrl(request.url), true)
 
+    // Credentials
     if (request.credentials === 'include') {
       xhr.withCredentials = true
     } else if (request.credentials === 'omit') {
@@ -113,6 +147,7 @@ export const fetch = (
       xhr.responseType = 'blob'
     }
 
+    // Set Headers
     if (
       init &&
       typeof init.headers === 'object' &&
@@ -137,6 +172,7 @@ export const fetch = (
       )
     }
 
+    // Handle abort controller signal
     if (request.signal) {
       request.signal.addEventListener('abort', () => xhr.abort())
 
@@ -147,8 +183,13 @@ export const fetch = (
         }
       }
     }
-
-    xhr.send(
-      typeof request._bodyInit === 'undefined' ? null : request._bodyInit
-    )
+    
+    const body = await toXMLHttpRequestBodyInit(initBody);
+    xhr.send(body);
   })
+
+export const isTimeoutError = (err: unknown) =>
+  typeof err === 'object' &&
+  err !== null &&
+  'message' in err &&
+  err.message === ERROR_MSG_TIMEOUT
