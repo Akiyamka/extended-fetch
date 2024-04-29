@@ -1,16 +1,16 @@
 {
   "name": "@akiyamka/extended-fetch",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "type": "module",
   "files": [
     "dist"
   ],
   "types": "./dist/extended-fetch.d.ts",
-  "module": "./dist/my-lib.js",
+  "module": "./dist/extended-fetch.js",
   "exports": {
     ".": {
-      "import": "./dist/my-lib.js"
+      "import": "./dist/extended-fetch.js"
     }
   },
   "scripts": {
