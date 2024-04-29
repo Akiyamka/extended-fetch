@@ -65,7 +65,7 @@ export const fetch = (
   input: RequestInfo | URL,
   init?: RequestInit,
   pref?: ExtendedFetchPreferences
-) =>
+): Promise<Response> =>
   new Promise(async (resolve, reject) => {
     const initBody = init?.body
     const request = new Request(input, init)
