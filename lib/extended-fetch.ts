@@ -1,6 +1,6 @@
 import type { ExtendedFetchPreferences } from './types'
 
-const ERROR_MSG_TIMEOUT = 'Network request timed out';
+const ERROR_MSG_TIMEOUT = 'Network request timed out'
 const g = globalThis
 
 function normalizeName(name: string) {
@@ -15,11 +15,11 @@ function normalizeName(name: string) {
   return name.toLowerCase()
 }
 
-function parseHeaders(rawHeaders) {
-  var headers = new Headers()
+function parseHeaders(rawHeaders: string) {
+  const headers = new Headers()
   // Replace instances of \r\n and \n followed by at least one space or horizontal tab with a space
   // https://tools.ietf.org/html/rfc7230#section-3.2
-  var preProcessedHeaders = rawHeaders.replace(/\r?\n[\t ]+/g, ' ')
+  const preProcessedHeaders = rawHeaders.replace(/\r?\n[\t ]+/g, ' ')
   // Avoiding split via regex to work around a common IE11 bug with the core-js 3.6.0 regex polyfill
   // https://github.com/github/fetch/issues/748
   // https://github.com/zloirock/core-js/issues/751
@@ -32,25 +32,31 @@ function parseHeaders(rawHeaders) {
         : header
     })
     .forEach((line) => {
-      var parts = line.split(':')
-      var key = parts.shift().trim()
+      const parts = line.split(':')
+      const key = parts.shift()?.trim()
       if (key) {
-        var value = parts.join(':').trim()
+        const value = parts.join(':').trim()
         try {
           headers.append(key, value)
         } catch (error) {
-          console.warn('Response ' + error.message)
+          if (error && typeof error === 'object' && 'message' in error) {
+            console.warn('Response ' + error.message)
+          } else {
+            console.warn('Response ' + error)
+          }
         }
       }
     })
   return headers
 }
 
-const toXMLHttpRequestBodyInit = async (body?: BodyInit | null): Promise<XMLHttpRequestBodyInit | null> => {
-  if (body === null || body === undefined) return null;
-  if (typeof body === 'string') return body;
+const toXMLHttpRequestBodyInit = async (
+  body?: BodyInit | null
+): Promise<XMLHttpRequestBodyInit | null> => {
+  if (body === null || body === undefined) return null
+  if (typeof body === 'string') return body
   if ('getReader' in body) {
-    return await new Response(body).blob();
+    return await new Response(body).blob()
   }
   return body
 }
@@ -61,7 +67,7 @@ export const fetch = (
   pref?: ExtendedFetchPreferences
 ) =>
   new Promise(async (resolve, reject) => {
-    const initBody = init?.body;
+    const initBody = init?.body
     const request = new Request(input, init)
 
     if (request.signal && request.signal.aborted) {
@@ -71,7 +77,7 @@ export const fetch = (
     const xhr = new XMLHttpRequest()
 
     xhr.onloadstart = (event) => {
-      pref?.eventListener?.({ type: 'loadstart', payload: event });
+      pref?.eventListener?.({ type: 'loadstart', payload: event })
     }
 
     xhr.onload = (event) => {
@@ -104,26 +110,26 @@ export const fetch = (
     }
 
     xhr.onerror = (event) => {
-      pref?.eventListener?.({ type: 'error', payload: event });
+      pref?.eventListener?.({ type: 'error', payload: event })
       setTimeout(() => reject(new TypeError('Network request failed')), 0)
     }
 
     xhr.ontimeout = (event) => {
-      pref?.eventListener?.({ type: 'timeout', payload: event });
+      pref?.eventListener?.({ type: 'timeout', payload: event })
       setTimeout(() => reject(new TypeError('Network request timed out')), 0)
     }
 
     xhr.onabort = (event) => {
-      pref?.eventListener?.({ type: 'abort', payload: event });
+      pref?.eventListener?.({ type: 'abort', payload: event })
       setTimeout(() => reject(new DOMException('Aborted', 'AbortError')), 0)
     }
 
     xhr.onprogress = (event) => {
-      pref?.eventListener?.({ type: 'progress', payload: event });
+      pref?.eventListener?.({ type: 'progress', payload: event })
     }
 
     xhr.onloadend = (event) => {
-      pref?.eventListener?.({ type: 'loadend', payload: event });
+      pref?.eventListener?.({ type: 'loadend', payload: event })
     }
 
     const fixUrl = (url: string) => {
@@ -159,6 +165,7 @@ export const fetch = (
       const names: string[] = []
       Object.getOwnPropertyNames(init.headers).forEach((name) => {
         names.push(normalizeName(name))
+        // @ts-expect-error can be statically checked
         xhr.setRequestHeader(name, String(init.headers![name]))
       })
       request.headers.forEach((value, name) => {
@@ -183,9 +190,9 @@ export const fetch = (
         }
       }
     }
-    
-    const body = await toXMLHttpRequestBodyInit(initBody);
-    xhr.send(body);
+
+    const body = await toXMLHttpRequestBodyInit(initBody)
+    xhr.send(body)
   })
 
 export const isTimeoutError = (err: unknown) =>
