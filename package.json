@@ -3,7 +3,6 @@
   "version": "0.0.1",
   "description": "",
   "type": "module",
-  "private": false,
   "files": [
     "dist"
   ],
@@ -23,7 +22,7 @@
     "fetch",
     "xhr"
   ],
-  "author": "",
+  "author": "akiyamka.github.io",
   "license": "ISC",
   "dependencies": {
     "prettier": "^3.2.5",
