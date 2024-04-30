@@ -7,7 +7,8 @@
     "dist"
   ],
   "types": "./dist/extended-fetch.d.ts",
-  "module": "./dist/extended-fetch.cjs",
+  "main": "./dist/cjs/index.cjs",
+  "module": "./dist/extended-fetch.js",
   "exports": {
     ".": {
       "import": "./dist/extended-fetch.js",

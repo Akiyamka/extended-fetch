@@ -1,12 +1,24 @@
 # extended-fetch
+![NPM Version](https://img.shields.io/npm/v/%40akiyamka%2Fextended-fetch)
+![NPM Type Definitions](https://img.shields.io/npm/types/%40akiyamka%2Fextended-fetch)
+[![spring-easing's badge](https://deno.bundlejs.com/badge?q=@akiyamka/extended-fetch@0.0.5&treeshake=[*]&config={%22esbuild%22:{%22format%22:%22esm%22}})](https://bundlejs.com/?q=@akiyamka/extended-fetch) [![Module type: ESM](https://img.shields.io/badge/module%20type-esm-brightgreen)](https://github.com/voxpelli/badges-cjs-esm) [![Module type: CJS](https://img.shields.io/badge/module%20type-cjs-brightgreen)](https://github.com/voxpelli/badges-cjs-esm)  
+Tiny window.fetch JavaScript implementation without over XMLHttpRequest with additional features  
+Can be used ds drop in replacement for fetch
 
-A window.fetch JavaScript implementation with additional features
+## Installation
+```sh
+npm install @akiyamka/extended-fetch
+```
 
 ## Usage
 
-Works just like whatwg fetch but you can
+Works just like native fetch, but with few additional features:
 
 ### Catch timeout error
+
+Fetch does not allow the user to know if his request was failed due to a 504 error.  
+Instead it throws common `TypeError: Failed to fetch`  
+But `extended-fetch` throw 'Timeout Error' error for that case
 
 ```js
 import { fetch, isTimeoutError } from 'extended-fetch';
@@ -22,6 +34,8 @@ fetch('/users', {
 ```
 
 ### Subscribe to xhr events:
+
+Also you can hook XMLHttpRequest events:
 
 - [loadstart](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/loadstart_event)
 - [load](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/load_event)
