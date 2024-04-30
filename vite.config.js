@@ -7,7 +7,7 @@ export default defineConfig({
     lib: {
       entry: resolve(__dirname, 'lib/extended-fetch.ts'),
       name: 'ExtendedFetch',
-      formats: ['es'],
+      formats: ['es', 'cjs'],
       fileName: 'extended-fetch',
       sourcemap: true,
       // Reduce bloat from legacy polyfills.

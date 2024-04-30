@@ -7,10 +7,11 @@
     "dist"
   ],
   "types": "./dist/extended-fetch.d.ts",
-  "module": "./dist/extended-fetch.js",
+  "module": "./dist/extended-fetch.cjs",
   "exports": {
     ".": {
-      "import": "./dist/extended-fetch.js"
+      "import": "./dist/extended-fetch.js",
+      "require": "./dist/extended-fetch.cjs"
     }
   },
   "scripts": {
