@@ -1,0 +1,6 @@
+{
+  "ECHO_SRV_HOST": "localhost:5555",
+  "TEST_SRV_HOST": "localhost:5173",
+  "CHECK_PHRASE": "Mock server ready",
+  "ALLOWED_HEADERS": ["X-TEST-HEADER", "X-test-HEADER2"]
+}

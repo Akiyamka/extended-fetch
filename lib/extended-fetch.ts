@@ -3,16 +3,13 @@ import type { ExtendedFetchPreferences } from './types'
 const ERROR_MSG_TIMEOUT = 'Network request timed out'
 const g = globalThis
 
-function normalizeName(name: string) {
-  if (typeof name !== 'string') {
-    name = String(name)
+// ? Do we really need that? Seems work correctly in firefox
+const fixUrl = (url: string) => {
+  try {
+    return url === '' && g.location.href ? g.location.href : url
+  } catch (e) {
+    return url
   }
-  if (/[^a-z0-9\-#$%&'*+.^_`|~!]/i.test(name) || name === '') {
-    throw new TypeError(
-      'Invalid character in header field name: "' + name + '"'
-    )
-  }
-  return name.toLowerCase()
 }
 
 function parseHeaders(rawHeaders: string) {
@@ -68,10 +65,21 @@ export const fetch = (
 ): Promise<Response> =>
   new Promise(async (resolve, reject) => {
     const initBody = init?.body
-    const request = new Request(input, init)
+
+    const request = (() => {
+      try {
+        return new Request(input, init)
+      } catch (e) {
+        reject(e)
+      }
+    })()
+
+    if (!request) return
 
     if (request.signal && request.signal.aborted) {
-      return reject(new DOMException('Aborted', 'AbortError'))
+      return reject(
+        new DOMException('The operation was aborted.', 'AbortError')
+      )
     }
 
     const xhr = new XMLHttpRequest()
@@ -81,32 +89,37 @@ export const fetch = (
     }
 
     xhr.onload = (event) => {
-      // This check if specifically for when a user fetches a file locally from the file system
-      // Only if the status is out of a normal range
-      const isOk =
-        request.url.indexOf('file://') === 0 &&
-        (xhr.status < 200 || xhr.status > 599)
+      try {
+        // This check if specifically for when a user fetches a file locally from the file system
+        // Only if the status is out of a normal range
+        const isOk =
+          request.url.indexOf('file://') === 0 &&
+          (xhr.status < 200 || xhr.status > 599)
 
-      const options: {
-        statusText: string
-        headers: Headers
-        status?: number
-        url?: string | null
-      } = {
-        statusText: xhr.statusText,
-        headers: parseHeaders(xhr.getAllResponseHeaders() || ''),
-        status: isOk ? 200 : xhr.status,
+        const options: {
+          statusText: string
+          headers: Headers
+          status?: number
+          url?: string | null
+        } = {
+          statusText: xhr.statusText,
+          headers: parseHeaders(xhr.getAllResponseHeaders() || ''),
+          status: isOk ? 200 : xhr.status,
+        }
+
+        options.url =
+          'responseURL' in xhr
+            ? xhr.responseURL
+            : options.headers.get('X-Request-URL')
+
+        // @ts-expect-error responseText can be in some implementations
+        const body = 'response' in xhr ? xhr.response : xhr.responseText
+        pref?.eventListener?.({ type: 'load', payload: event })
+        setTimeout(() => resolve(new Response(body, options)), 0)
+      } catch (e) {
+        console.log('CATCHED')
+        reject(e)
       }
-
-      options.url =
-        'responseURL' in xhr
-          ? xhr.responseURL
-          : options.headers.get('X-Request-URL')
-
-      // @ts-expect-error responseText can be in some implementations
-      const body = 'response' in xhr ? xhr.response : xhr.responseText
-      pref?.eventListener?.({ type: 'load', payload: event })
-      setTimeout(() => resolve(new Response(body, options)), 0)
     }
 
     xhr.onerror = (event) => {
@@ -132,14 +145,6 @@ export const fetch = (
       pref?.eventListener?.({ type: 'loadend', payload: event })
     }
 
-    const fixUrl = (url: string) => {
-      try {
-        return url === '' && g.location.href ? g.location.href : url
-      } catch (e) {
-        return url
-      }
-    }
-
     xhr.open(request.method, fixUrl(request.url), true)
 
     // Credentials
@@ -154,39 +159,19 @@ export const fetch = (
     }
 
     // Set Headers
-    if (
-      init &&
-      typeof init.headers === 'object' &&
-      !(
-        init.headers instanceof Headers ||
-        (g.Headers && init.headers instanceof g.Headers)
-      )
-    ) {
-      const names: string[] = []
-      Object.getOwnPropertyNames(init.headers).forEach((name) => {
-        names.push(normalizeName(name))
-        // @ts-expect-error can be statically checked
-        xhr.setRequestHeader(name, String(init.headers![name]))
-      })
-      request.headers.forEach((value, name) => {
-        if (names.indexOf(name) === -1) {
-          xhr.setRequestHeader(name, value)
-        }
-      })
-    } else {
-      request.headers.forEach((value, name) =>
-        xhr.setRequestHeader(name, value)
-      )
-    }
+    request.headers.forEach((value, name) =>
+      xhr.setRequestHeader(name, value)
+    )
 
     // Handle abort controller signal
     if (request.signal) {
-      request.signal.addEventListener('abort', () => xhr.abort())
+      const xhrAbort = () => xhr.abort()
+      request.signal.addEventListener('abort', xhrAbort)
 
-      xhr.onreadystatechange = function () {
+      xhr.onreadystatechange = () => {
         // DONE (success or failure)
         if (xhr.readyState === 4) {
-          request.signal.removeEventListener('abort', () => xhr.abort())
+          request.signal.removeEventListener('abort', xhrAbort)
         }
       }
     }
@@ -200,3 +185,10 @@ export const isTimeoutError = (err: unknown) =>
   err !== null &&
   'message' in err &&
   err.message === ERROR_MSG_TIMEOUT
+
+export const isAbortError = (err: unknown) =>
+  typeof err === 'object' &&
+  err !== null &&
+  'name' in err &&
+  // https://dom.spec.whatwg.org/#aborting-ongoing-activities-example
+  err.name === 'AbortError'

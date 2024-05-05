@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import { resolve } from 'path'
 import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
@@ -22,4 +23,13 @@ export default defineConfig({
     },
   },
   plugins: [dts()],
+  test: {
+    browser: {
+      enabled: true,
+      name: 'chrome',
+    },
+    coverage: {
+      provider: 'istanbul'
+    }
+  }
 })
