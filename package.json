@@ -1,6 +1,6 @@
 {
   "name": "@akiyamka/extended-fetch",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Tiny window.fetch JavaScript implementation over XMLHttpRequest with additional features",
   "type": "module",
   "files": [
