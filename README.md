@@ -1,7 +1,8 @@
 # extended-fetch
+
 ![NPM Version](https://img.shields.io/npm/v/%40akiyamka%2Fextended-fetch)
 ![NPM Type Definitions](https://img.shields.io/npm/types/%40akiyamka%2Fextended-fetch)
-[![spring-easing's badge](https://deno.bundlejs.com/badge?q=@akiyamka/extended-fetch@0.0.5&treeshake=[*]&config={%22esbuild%22:{%22format%22:%22esm%22}})](https://bundlejs.com/?q=@akiyamka/extended-fetch) [![Module type: ESM](https://img.shields.io/badge/module%20type-esm-brightgreen)](https://github.com/voxpelli/badges-cjs-esm) [![Module type: CJS](https://img.shields.io/badge/module%20type-cjs-brightgreen)](https://github.com/voxpelli/badges-cjs-esm)  
+[![spring-easing's badge](https://deno.bundlejs.com/badge?q=@akiyamka/extended-fetch@0.0.5&treeshake=[*]&config={%22esbuild%22:{%22format%22:%22esm%22}})](https://bundlejs.com/?q=@akiyamka/extended-fetch) [![Module type: ESM](https://img.shields.io/badge/module%20type-esm-brightgreen)](https://github.com/voxpelli/badges-cjs-esm) [![Module type: CJS](https://img.shields.io/badge/module%20type-cjs-brightgreen)](https://github.com/voxpelli/badges-cjs-esm)
 
 Currently, there is no way to determine that the reason the request failed is due to the Timeout Error using the fetch API, but sometimes it needed, for example, for meaningful UI reaction.
 
@@ -9,12 +10,14 @@ Currently, there is no way to determine that the reason the request failed is du
 
 **This library allows you to cath Timeout Error without enforcing a time restriction**
 
-🤏 Tiny size
+🤏 Tiny size  
 🧩 Does not patching existing fetch, just exports own implementation  
-🔀 Can be used as drop in replacement for fetch  
+🔀 Can be used as drop in replacement for fetch
+
 > ⚠️ It's not a fetch polyfill. It uses `Request` and `Response` objects from fetch implementation
 
 ## Installation
+
 ```sh
 npm install @akiyamka/extended-fetch
 ```
@@ -30,16 +33,16 @@ Instead it throws common `TypeError: Failed to fetch`
 But `extended-fetch` throw 'Timeout Error' error for that case
 
 ```js
-import { fetch, isTimeoutError } from 'extended-fetch';
+import { fetch, isTimeoutError } from 'extended-fetch'
 
 fetch('/users', {
   method: 'POST',
   body: JSON.stringify({ foo: 'bar' }),
 }).catch((error) => {
   // Allow identify timeout error
-  console.assert(error.message, 'Timeout Error');
-  console.assert(isTimeoutError(error), true);
-});
+  console.assert(error.message, 'Timeout Error')
+  console.assert(isTimeoutError(error), true)
+})
 ```
 
 ### Subscribe to xhr events:
@@ -54,7 +57,7 @@ Also you can hook XMLHttpRequest events:
 - [abort](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/abort_event)
 
 ```js
-import { fetch } from 'extended-fetch';
+import { fetch } from 'extended-fetch'
 
 fetch(
   '/users',
@@ -66,16 +69,19 @@ fetch(
     // Extra setting
     eventListener: (event) => {
       if (event.type === 'progress') {
-        console.log(`Progress changed to ${event.payload}`);
+        console.log(`Progress changed to ${event.payload}`)
       }
     },
   }
 )
 ```
+
 ### Catch Abort error
-The library has a typed helper for Abort error detection 
+
+The library has a typed helper for Abort error detection
+
 ```ts
-import { fetch, isAbortError } from 'extended-fetch';
+import { fetch, isAbortError } from 'extended-fetch'
 
 const abortController = new AbortController()
 abortController.abort()
@@ -83,7 +89,7 @@ try {
   const reference = await fetch(srv.readyCheck(), {
     signal: abortController.signal,
   })
-} catch(err) {
+} catch (err) {
   if (isAbortError(e)) {
     // request was aborted
   }
