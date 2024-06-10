@@ -58,7 +58,7 @@ const toXMLHttpRequestBodyInit = async (
   return body
 }
 
-export const fetch = (
+export default (
   input: RequestInfo | URL,
   init?: RequestInit,
   pref?: ExtendedFetchPreferences
@@ -188,3 +188,5 @@ export const isAbortError = (err: unknown) =>
   'name' in err &&
   // https://dom.spec.whatwg.org/#aborting-ongoing-activities-example
   err.name === 'AbortError'
+
+  export type { ExtendedFetchPreferences } from './types';

@@ -31,9 +31,9 @@ Instead it throws common `TypeError: Failed to fetch`
 But `extended-fetch` throw 'Timeout Error' error for that case
 
 ```js
-import { fetch, isTimeoutError } from '@akiyamka/extended-fetch'
+import extendedFetch, { isTimeoutError } from '@akiyamka/extended-fetch'
 
-fetch('/users', {
+extendedFetch('/users', {
   method: 'POST',
   body: JSON.stringify({ foo: 'bar' }),
 }).catch((error) => {
@@ -47,9 +47,9 @@ fetch('/users', {
 
 
 ```js
-import { fetch } from 'extended-fetch'
+import extendedFetch from 'extended-fetch'
 
-fetch(
+extendedFetch(
   '/users',
   // Fetch configuration
   {
@@ -73,12 +73,12 @@ fetch(
 The library has a typed helper for Abort error detection
 
 ```ts
-import { fetch, isAbortError } from 'extended-fetch'
+import extendedFetch, { isAbortError } from 'extended-fetch'
 
 const abortController = new AbortController()
 abortController.abort()
 try {
-  const reference = await fetch(srv.readyCheck(), {
+  const reference = await extendedFetch(srv.readyCheck(), {
     signal: abortController.signal,
   })
 } catch (err) {
