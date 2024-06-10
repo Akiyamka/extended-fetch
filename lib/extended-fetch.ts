@@ -84,10 +84,6 @@ export const fetch = (
 
     const xhr = new XMLHttpRequest()
 
-    xhr.onloadstart = (event) => {
-      pref?.eventListener?.({ type: 'loadstart', payload: event })
-    }
-
     xhr.onload = (event) => {
       try {
         // This check if specifically for when a user fetches a file locally from the file system
@@ -114,7 +110,6 @@ export const fetch = (
 
         // @ts-expect-error responseText can be in some implementations
         const body = 'response' in xhr ? xhr.response : xhr.responseText
-        pref?.eventListener?.({ type: 'load', payload: event })
         setTimeout(() => resolve(new Response(body, options)), 0)
       } catch (e) {
         console.log('CATCHED')
@@ -123,27 +118,28 @@ export const fetch = (
     }
 
     xhr.onerror = (event) => {
-      pref?.eventListener?.({ type: 'error', payload: event })
       setTimeout(() => reject(new TypeError('Network request failed')), 0)
     }
 
     xhr.ontimeout = (event) => {
-      pref?.eventListener?.({ type: 'timeout', payload: event })
       setTimeout(() => reject(new TypeError('Network request timed out')), 0)
     }
 
     xhr.onabort = (event) => {
-      pref?.eventListener?.({ type: 'abort', payload: event })
       setTimeout(() => reject(new DOMException('Aborted', 'AbortError')), 0)
     }
 
     xhr.onprogress = (event) => {
-      pref?.eventListener?.({ type: 'progress', payload: event })
+      if (event.lengthComputable) {
+        pref?.onDownloadProgress?.({ progress: event.loaded / event.total, bytes: event.loaded })
+      }
     }
-
-    xhr.onloadend = (event) => {
-      pref?.eventListener?.({ type: 'loadend', payload: event })
-    }
+    
+    xhr.upload.addEventListener('progress', (event) => {
+      if (event.lengthComputable) {
+        pref?.onUploadProgress?.({ progress: event.loaded / event.total, bytes: event.loaded })
+      }
+    })
 
     xhr.open(request.method, fixUrl(request.url), true)
 

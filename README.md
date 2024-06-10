@@ -4,17 +4,15 @@
 ![NPM Type Definitions](https://img.shields.io/npm/types/%40akiyamka%2Fextended-fetch)
 [![spring-easing's badge](https://deno.bundlejs.com/badge?q=@akiyamka/extended-fetch@0.0.5&treeshake=[*]&config={%22esbuild%22:{%22format%22:%22esm%22}})](https://bundlejs.com/?q=@akiyamka/extended-fetch) [![Module type: ESM](https://img.shields.io/badge/module%20type-esm-brightgreen)](https://github.com/voxpelli/badges-cjs-esm) [![Module type: CJS](https://img.shields.io/badge/module%20type-cjs-brightgreen)](https://github.com/voxpelli/badges-cjs-esm)
 
-Currently, there is no way to determine that the reason the request failed is due to the Timeout Error using the fetch API, but sometimes it needed, for example, for meaningful UI reaction.
-
-[The most popular workaround](https://stackoverflow.com/questions/46946380/fetch-api-request-timeout) for this today is to set a forced limit on the client side, which will only work if it less than the existing limit outside, and it will also break functionality in situations where the limit has been raised above the standard limit
 
 **This library allows you to cath Timeout Error without enforcing a time restriction**
 
+🧹 No dependencies  
 🤏 Tiny size  
-🧩 Does not patching existing fetch, just exports own implementation  
-🔀 Can be used as drop in replacement for fetch
+🧩 Does not patching existing fetch  
+🔀 In most cases can be used as drop in replacement for fetch  
 
-> ⚠️ It's not a fetch polyfill. It uses `Request` and `Response` objects from fetch implementation
+> ⚠️ It's *not* a fetch polyfill. It uses `Request` and `Response` objects from fetch implementation
 
 ## Installation
 
@@ -24,7 +22,7 @@ npm install @akiyamka/extended-fetch
 
 ## Usage
 
-Works just like native fetch, but with few additional features:
+Have fetch like api, but with few additional features:
 
 ### Catch timeout error
 
@@ -33,7 +31,7 @@ Instead it throws common `TypeError: Failed to fetch`
 But `extended-fetch` throw 'Timeout Error' error for that case
 
 ```js
-import { fetch, isTimeoutError } from 'extended-fetch'
+import { fetch, isTimeoutError } from '@akiyamka/extended-fetch'
 
 fetch('/users', {
   method: 'POST',
@@ -45,32 +43,26 @@ fetch('/users', {
 })
 ```
 
-### Subscribe to xhr events:
+### Subscribe to upload and download events with progress:
 
-Also you can hook XMLHttpRequest events:
-
-- [loadstart](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/loadstart_event)
-- [load](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/load_event)
-- [loadend](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/loadend_event)
-- [progress](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/progress_event)
-- [error](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/error_event)
-- [abort](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/abort_event)
 
 ```js
 import { fetch } from 'extended-fetch'
 
 fetch(
   '/users',
+  // Fetch configuration
   {
     method: 'POST',
     body: JSON.stringify({ foo: 'bar' }),
   },
+  // Additional settings
   {
-    // Extra setting
-    eventListener: (event) => {
-      if (event.type === 'progress') {
-        console.log(`Progress changed to ${event.payload}`)
-      }
+    onUploadProgress: (event) => {
+       console.log(`Uploaded: ${event.progress}% (${event.bytes} bytes)`)
+    },
+    onDownloadProgress: (event) => {
+       console.log(`Downloaded: ${event.progress}% (${event.bytes} bytes)`)
     },
   }
 )
@@ -96,6 +88,19 @@ try {
 }
 ```
 
-## Credits
+## Motivation 
 
-Inspired by https://github.com/JakeChampion/fetch
+Fetch has a pretty good api but doesn't cover some of the frequent occurrences of what an XHR query can give us
+
+### Fetch and timeout error
+Currently, there is no way to determine that the reason the request failed is due to the Timeout Error using the fetch API, but sometimes it needed, for example, for meaningful UI reaction.
+
+[The most popular workaround](https://stackoverflow.com/questions/46946380/fetch-api-request-timeout) for this today is to set a forced limit on the client side, which will only work if it less than the existing limit outside, and it will also break functionality in situations where the limit has been raised above the standard limit
+
+### Fetch and uploading progress
+
+Using fetch we can get *download* progress information [using readable stream](https://developer.mozilla.org/en-US/docs/Web/API/Streams_API/Using_readable_streams#consuming_a_fetch_as_a_stream)(if supported), but we still don't have a way to get *upload* progress using fetch api.
+
+
+### Let's combine fetch api and XHR capabilities
+I wrapped XHR in a fetch api (taking some code from the [fetch polyfill](https://github.com/JakeChampion/fetch)) and added the missing functionality available from the XHR api
