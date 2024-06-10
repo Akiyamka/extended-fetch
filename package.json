@@ -1,7 +1,11 @@
 {
   "name": "@akiyamka/extended-fetch",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Tiny window.fetch JavaScript implementation over XMLHttpRequest with additional features",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Akiyamka/extended-fetch"
+  },
   "type": "module",
   "files": [
     "dist"
@@ -32,7 +36,7 @@
   ],
   "author": "akiyamka.github.io",
   "license": "ISC",
-  "dependencies": {
+  "devDependencies": {
     "@types/node": "^20.12.8",
     "@vitest/browser": "^1.6.0",
     "@vitest/coverage-istanbul": "^1.6.0",
