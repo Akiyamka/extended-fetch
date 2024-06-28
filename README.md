@@ -2,7 +2,7 @@
 
 ![NPM Version](https://img.shields.io/npm/v/%40akiyamka%2Fextended-fetch)
 ![NPM Type Definitions](https://img.shields.io/npm/types/%40akiyamka%2Fextended-fetch)
-[![spring-easing's badge](https://deno.bundlejs.com/badge?q=@akiyamka/extended-fetch@0.0.5&treeshake=[*]&config={%22esbuild%22:{%22format%22:%22esm%22}})](https://bundlejs.com/?q=@akiyamka/extended-fetch) [![Module type: ESM](https://img.shields.io/badge/module%20type-esm-brightgreen)](https://github.com/voxpelli/badges-cjs-esm) [![Module type: CJS](https://img.shields.io/badge/module%20type-cjs-brightgreen)](https://github.com/voxpelli/badges-cjs-esm)
+[![spring-easing's badge](https://deno.bundlejs.com/badge?q=@akiyamka/extended-fetch&treeshake=[*]&config={%22esbuild%22:{%22format%22:%22esm%22}})](https://bundlejs.com/?q=@akiyamka/extended-fetch) [![Module type: ESM](https://img.shields.io/badge/module%20type-esm-brightgreen)](https://github.com/voxpelli/badges-cjs-esm) [![Module type: CJS](https://img.shields.io/badge/module%20type-cjs-brightgreen)](https://github.com/voxpelli/badges-cjs-esm)
 
 
 **This library allows you to cath Timeout Error without enforcing a time restriction**
