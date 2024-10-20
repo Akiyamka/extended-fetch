@@ -1,5 +1,5 @@
 import http from 'node:http'
-import constants from './constants.json' assert { type: 'json' };
+import constants from './constants.json' with { type: 'json' };
 
 const server = http.createServer((req, res) => {
   res.setHeader('Access-Control-Allow-Origin', `http://${constants.TEST_SRV_HOST}`)
