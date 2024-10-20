@@ -1,6 +1,6 @@
 {
   "name": "@akiyamka/extended-fetch",
-  "version": "0.0.10",
+  "version": "1.0.0",
   "description": "Tiny window.fetch JavaScript implementation over XMLHttpRequest with additional features",
   "repository": {
     "type": "git",
@@ -15,8 +15,14 @@
   "module": "./dist/extended-fetch.js",
   "exports": {
     ".": {
-      "import": "./dist/extended-fetch.js",
-      "require": "./dist/extended-fetch.cjs"
+      "import": {
+        "types": "./dist/lib/extended-fetch.d.ts",
+        "default": "./dist/extended-fetch.js"
+      },
+      "require": {
+        "types": "./dist/lib/extended-fetch.d.ts",
+        "default": "./dist/extended-fetch.cjs"
+      }
     }
   },
   "scripts": {
@@ -46,5 +52,6 @@
     "vite-plugin-dts": "^3.9.0",
     "vitest": "^1.6.0",
     "webdriverio": "^8.36.1"
-  }
+  },
+  "packageManager": "pnpm@8.15.3+sha256.fc4a49bd609550a41e14d20efbce802a4b892aa4cac877322de2f0924f122991"
 }

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test } from 'vitest'
-import extendedFetch, { isAbortError } from '../lib/extended-fetch'
+import { extendedFetch, isAbortError } from '../lib/extended-fetch'
 import { Cookie, DevServerClient } from '../lib/utils'
 import {
   ALLOWED_HEADERS,

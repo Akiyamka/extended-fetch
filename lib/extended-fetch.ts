@@ -58,7 +58,7 @@ const toXMLHttpRequestBodyInit = async (
   return body
 }
 
-export default (
+export const extendedFetch = (
   input: RequestInfo | URL,
   init?: RequestInit,
   pref?: ExtendedFetchPreferences
@@ -134,12 +134,16 @@ export default (
         pref?.onDownloadProgress?.({ progress: event.loaded / event.total, bytes: event.loaded })
       }
     }
-    
-    xhr.upload.addEventListener('progress', (event) => {
-      if (event.lengthComputable) {
-        pref?.onUploadProgress?.({ progress: event.loaded / event.total, bytes: event.loaded })
-      }
-    })
+    // Meet "Simple request" definition to avoid CORS preflight requests
+    // https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#simple_requests:~:text=no%20code,the%20upload
+    if (pref?.onUploadProgress) {
+      xhr.upload.addEventListener('progress', (event) => {
+        if (event.lengthComputable) {
+          pref?.onUploadProgress?.({ progress: event.loaded / event.total, bytes: event.loaded })
+        }
+      })
+    }
+  
 
     xhr.open(request.method, fixUrl(request.url), true)
 

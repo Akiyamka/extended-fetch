@@ -31,7 +31,7 @@ Instead it throws common `TypeError: Failed to fetch`
 But `extended-fetch` throw 'Timeout Error' error for that case
 
 ```js
-import extendedFetch, { isTimeoutError } from '@akiyamka/extended-fetch'
+import { extendedFetch, isTimeoutError } from '@akiyamka/extended-fetch'
 
 extendedFetch('/users', {
   method: 'POST',
@@ -47,7 +47,7 @@ extendedFetch('/users', {
 
 
 ```js
-import extendedFetch from 'extended-fetch'
+import { extendedFetch } from 'extended-fetch'
 
 extendedFetch(
   '/users',
@@ -73,7 +73,7 @@ extendedFetch(
 The library has a typed helper for Abort error detection
 
 ```ts
-import extendedFetch, { isAbortError } from 'extended-fetch'
+import { extendedFetch, isAbortError } from 'extended-fetch'
 
 const abortController = new AbortController()
 abortController.abort()
@@ -99,7 +99,7 @@ Currently, there is no way to determine that the reason the request failed is du
 
 ### Fetch and uploading progress
 
-Using fetch we can get *download* progress information [using readable stream](https://developer.mozilla.org/en-US/docs/Web/API/Streams_API/Using_readable_streams#consuming_a_fetch_as_a_stream)(if supported), but we still don't have a way to get *upload* progress using fetch api.
+Using fetch we can get *download* progress information [using readable stream](https://developer.mozilla.org/en-US/docs/Web/API/Streams_API/Using_readable_streams#consuming_a_fetch_as_a_stream) (if supported), but we still don't have a way to get *upload* progress using fetch api.
 
 
 ### Let's combine fetch api and XHR capabilities
