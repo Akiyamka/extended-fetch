@@ -112,7 +112,6 @@ export const extendedFetch = (
         const body = 'response' in xhr ? xhr.response : xhr.responseText
         setTimeout(() => resolve(new Response(body, options)), 0)
       } catch (e) {
-        console.log('CATCHED')
         reject(e)
       }
     }
