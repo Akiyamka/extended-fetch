@@ -1,6 +1,28 @@
 import { extendedFetch } from '@akiyamka/extended-fetch';
 import { generateFile } from './fileGen';
 
+/* Demo of downloading file */
+export function setupDownload(btn: HTMLButtonElement, bar: HTMLDivElement) {
+  const startDownload = async () => {
+    btn.setAttribute('disabled', 'true');
+    await extendedFetch(
+      'http://localhost:3000/download',
+      {},
+      {
+        onDownloadProgress: (event) => {
+          const percent = Math.floor(event.progress * 100) + '%';
+          bar.style.setProperty('--percent', percent);
+          bar.innerHTML = `${(event.bytes / 1048576).toFixed(2)} MiB`;
+        },
+      }
+    );
+    btn.removeAttribute('disabled');
+  };
+
+  btn.addEventListener('click', () => startDownload());
+}
+
+/* Demo of uploading file */
 export function setupUpload(
   btn: HTMLButtonElement,
   bar: HTMLDivElement,
@@ -35,22 +57,3 @@ export function setupUpload(
   btn.addEventListener('click', () => startUpload());
 }
 
-export function setupDownload(btn: HTMLButtonElement, bar: HTMLDivElement) {
-  const startDownload = async () => {
-    btn.setAttribute('disabled', 'true');
-    await extendedFetch(
-      'http://localhost:3000/download',
-      {},
-      {
-        onDownloadProgress: (event) => {
-          const percent = Math.floor(event.progress * 100) + '%';
-          bar.style.setProperty('--percent', percent);
-          bar.innerHTML = `${(event.bytes / 1048576).toFixed(2)} MiB`;
-        },
-      }
-    );
-    btn.removeAttribute('disabled');
-  };
-
-  btn.addEventListener('click', () => startDownload());
-}

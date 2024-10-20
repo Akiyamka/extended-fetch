@@ -1,6 +1,6 @@
 import './style.css';
 import npmLogo from '/npm.svg';
-import { setupUpload, setupDownload } from './demo.ts';
+import { setupUpload, setupDownload } from './demo';
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div>
