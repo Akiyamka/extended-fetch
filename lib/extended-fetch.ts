@@ -138,6 +138,8 @@ export const extendedFetch = (
       xhr.upload.addEventListener('progress', (event) => {
         if (event.lengthComputable) {
           pref?.onUploadProgress?.({ progress: event.loaded / event.total, bytes: event.loaded })
+        } else {
+          console.debug('[Extended Fetch]: length not computable')
         }
       })
     }

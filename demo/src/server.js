@@ -74,7 +74,7 @@ const handle404 = (res) => {
             <a id="link">Click here to start</a>
         </body>
         <script>
-          document.querySelector('#link').setAttribute('href', 'https://' + location.host.replace(${PORT}, '5173'))
+          document.querySelector('#link').setAttribute('href', '//' + location.host.replace(${PORT}, '5173'))
         </script>
         </html>
     `;
