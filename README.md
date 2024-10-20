@@ -44,7 +44,7 @@ extendedFetch('/users', {
 
 ### Subscribe to upload and download events with progress:
 
-[Stackblitz live demo](https://stackblitz.com/edit/vitejs-vite-8t5mbf?file=src%demo.ts)
+[Stackblitz live demo](https://stackblitz.com/edit/vitejs-vite-8t5mbf?file=src%2Fdemo.ts)
 
 ```js
 import { extendedFetch } from 'extended-fetch'
