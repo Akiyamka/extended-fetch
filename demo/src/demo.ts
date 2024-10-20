@@ -1,17 +1,5 @@
 import { extendedFetch } from '@akiyamka/extended-fetch';
-
-function generateRandomContent(bytes: number): Promise<ArrayBuffer> {
-  return new Promise((res) => {
-    setTimeout(() => {
-      const buffer = new ArrayBuffer(bytes);
-      const view = new Uint8Array(buffer);
-      for (let i = 0; i < bytes; i++) {
-        view[i] = Math.floor(Math.random() * 256);
-      }
-      res(buffer);
-    });
-  });
-}
+import { generateFile } from './fileGen';
 
 export function setupUpload(
   btn: HTMLButtonElement,
@@ -19,13 +7,17 @@ export function setupUpload(
   message: HTMLDivElement
 ) {
   const startUpload = async () => {
-    message.innerHTML = '';
     btn.setAttribute('disabled', 'true');
+    message.innerHTML = 'Generating file...';
+    const file = await generateFile(300 * 1024 * 1024); // 300 MiB
+    const formData = new FormData();
+    formData.append('file', file, 'random_file_300MB.bin');
+    message.innerHTML = 'Sending...';
     const result = await extendedFetch(
       'http://localhost:3000/upload',
       {
         method: 'POST',
-        body: await generateRandomContent(300 * 1024 * 1024), // 300 MiB
+        body: formData, 
       },
       {
         onUploadProgress: (event) => {
