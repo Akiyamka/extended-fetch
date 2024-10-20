@@ -1,9 +1,8 @@
 import type { ExtendedFetchPreferences } from './types'
-
-const ERROR_MSG_TIMEOUT = 'Network request timed out'
+import { ERROR_MSG_ABORT, ERROR_MSG_NETWORK, ERROR_MSG_TIMEOUT } from './constants';
 const g = globalThis
 
-// ? Do we really need that? Seems work correctly in firefox
+// ? Do we really need that? Seems Request already done this for us
 const fixUrl = (url: string) => {
   try {
     return url === '' && g.location.href ? g.location.href : url
@@ -78,13 +77,13 @@ export const extendedFetch = (
 
     if (request.signal && request.signal.aborted) {
       return reject(
-        new DOMException('The operation was aborted.', 'AbortError')
+        new DOMException('The operation was aborted.', ERROR_MSG_ABORT)
       )
     }
 
     const xhr = new XMLHttpRequest()
 
-    xhr.onload = (event) => {
+    xhr.onload = () => {
       try {
         // This check if specifically for when a user fetches a file locally from the file system
         // Only if the status is out of a normal range
@@ -116,16 +115,16 @@ export const extendedFetch = (
       }
     }
 
-    xhr.onerror = (event) => {
-      setTimeout(() => reject(new TypeError('Network request failed')), 0)
+    xhr.onerror = () => {
+      setTimeout(() => reject(new TypeError(ERROR_MSG_NETWORK)), 0)
     }
 
-    xhr.ontimeout = (event) => {
-      setTimeout(() => reject(new TypeError('Network request timed out')), 0)
+    xhr.ontimeout = () => {
+      setTimeout(() => reject(new TypeError(ERROR_MSG_TIMEOUT)), 0)
     }
 
-    xhr.onabort = (event) => {
-      setTimeout(() => reject(new DOMException('Aborted', 'AbortError')), 0)
+    xhr.onabort = () => {
+      setTimeout(() => reject(new DOMException('Aborted', ERROR_MSG_ABORT)), 0)
     }
 
     xhr.onprogress = (event) => {
@@ -190,6 +189,6 @@ export const isAbortError = (err: unknown) =>
   err !== null &&
   'name' in err &&
   // https://dom.spec.whatwg.org/#aborting-ongoing-activities-example
-  err.name === 'AbortError'
+  err.name === ERROR_MSG_ABORT
 
   export type { ExtendedFetchPreferences } from './types';

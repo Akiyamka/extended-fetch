@@ -103,20 +103,9 @@ describe('Headers', () => {
   })
 })
 
-describe('Events', () => {
-  test.todo('onloadstart', () => {})
-
-  test.todo('onload', () => {})
-
-  test.todo('onerror', () => {})
-
-  test.todo('ontimeout', () => {})
-
-  test.todo('onabort', () => {})
-
-  test.todo('onprogress', () => {})
-
-  test.todo('onloadend', () => {})
+describe('Progress', () => {
+  test.todo('onUploadProgress', () => {})
+  test.todo('onDownloadProgress', () => {})
 })
 
 describe('Abort', () => {
@@ -144,10 +133,3 @@ describe('Utils', () => {
   })
 })
 
-describe('URL', () => {
-  test.todo('Transformed correctly when empty string', async () => {
-    const reference = await fetch('')
-    const result = await extendedFetch('')
-    expect(reference.url).toBe(result.url)
-  })
-})

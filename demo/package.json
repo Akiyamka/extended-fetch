@@ -1,0 +1,20 @@
+{
+  "name": "vite-typescript-starter",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm run /^dev:[^:]*$/",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "dev:server": "node ./src/server.js",
+    "dev:client": "vite"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.2",
+    "vite": "^5.4.9"
+  },
+  "dependencies": {
+    "@akiyamka/extended-fetch": "^1.0.0"
+  }
+}
