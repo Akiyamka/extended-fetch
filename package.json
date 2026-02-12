@@ -27,12 +27,11 @@
   },
   "scripts": {
     "test": "pnpm run /^test:[^:]*$/",
-    "test:types": "tsc --noEmit",
-    "test:e2e": "pnpm run /^test:e2e:.*/",
-    "test:e2e:server": "node ./test/test-server.mjs",
-    "test:e2e:tests": "vitest",
+    "test:types": "tsc  --project \"./lib/tsconfig.json\" --noEmit",
+    "test:e2e": "vitest run",
+    "mock": "node ./test/mock-server.mjs",
     "dev": "vite",
-    "build": "npx tsc --project \"./lib/tsconfig.json\"",
+    "build": "tsc --project \"./lib/tsconfig.json\"",
     "release": "pnpm test && pnpm build && pnpm publish --access public",
     "coverage": "vitest run --coverage"
   },
