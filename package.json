@@ -1,6 +1,6 @@
 {
   "name": "@akiyamka/extended-fetch",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Tiny window.fetch JavaScript implementation over XMLHttpRequest with additional features",
   "repository": {
     "type": "git",
@@ -10,17 +10,17 @@
   "files": [
     "dist"
   ],
-  "types": "./dist/lib/extended-fetch.d.ts",
+  "types": "./dist/extended-fetch.d.ts",
   "main": "./dist/extended-fetch.cjs",
   "module": "./dist/extended-fetch.js",
   "exports": {
     ".": {
       "import": {
-        "types": "./dist/lib/extended-fetch.d.ts",
+        "types": "./dist/extended-fetch.d.ts",
         "default": "./dist/extended-fetch.js"
       },
       "require": {
-        "types": "./dist/lib/extended-fetch.d.ts",
+        "types": "./dist/extended-fetch.d.ts",
         "default": "./dist/extended-fetch.cjs"
       }
     }
@@ -32,13 +32,14 @@
     "test:e2e:server": "node ./test/test-server.mjs",
     "test:e2e:tests": "vitest",
     "dev": "vite",
-    "build": "vite build",
+    "build": "npx tsc --project \"./lib/tsconfig.json\"",
     "release": "pnpm test && pnpm build && pnpm publish --access public",
     "coverage": "vitest run --coverage"
   },
   "keywords": [
     "fetch",
-    "xhr"
+    "xhr",
+    "progress"
   ],
   "author": "akiyamka.github.io",
   "license": "ISC",
@@ -48,8 +49,6 @@
     "@vitest/coverage-istanbul": "^1.6.0",
     "prettier": "^3.2.5",
     "typescript": "^5.4.5",
-    "vite": "^5.2.11",
-    "vite-plugin-dts": "^3.9.0",
     "vitest": "^1.6.0",
     "webdriverio": "^8.36.1"
   },

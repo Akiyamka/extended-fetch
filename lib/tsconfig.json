@@ -3,6 +3,7 @@
   "compilerOptions": {
     "declaration": true,
     "esModuleInterop": true,
+    "declarationMap": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
@@ -13,7 +14,7 @@
     "isolatedModules": true,
     "lib": ["DOM", "ESNext"],
     "target": "ES2020",
-    "module": "ESNext"
+    "module": "ESNext",
+    "outDir": "../dist"
   },
-  "exclude": ["**/dist", "**/node_modules", "**/demo"]
 }
