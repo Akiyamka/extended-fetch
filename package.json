@@ -33,7 +33,8 @@
     "dev": "vite",
     "build": "tsc --project \"./lib/tsconfig.json\"",
     "release": "pnpm test && pnpm build && pnpm publish --access public",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "coverage:serve": "vitest run --coverage && serve ./coverage"
   },
   "keywords": [
     "fetch",
@@ -49,7 +50,8 @@
     "prettier": "^3.2.5",
     "typescript": "^5.4.5",
     "vitest": "^1.6.0",
-    "webdriverio": "^8.36.1"
+    "webdriverio": "^8.36.1",
+    "serve": "^14.2.5"
   },
-  "packageManager": "pnpm@8.15.3+sha256.fc4a49bd609550a41e14d20efbce802a4b892aa4cac877322de2f0924f122991"
+  "packageManager": "pnpm@10.29.3+sha512.498e1fb4cca5aa06c1dcf2611e6fafc50972ffe7189998c409e90de74566444298ffe43e6cd2acdc775ba1aa7cc5e092a8b7054c811ba8c5770f84693d33d2dc"
 }
