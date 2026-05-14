@@ -61,10 +61,19 @@ describe('Payload', () => {
 })
 
 describe('Headers', () => {
+  // Firefox sends `priority` (RFC 9218) on `fetch()` but not on XHR, so the
+  // reference response carries a header that the XHR-based result cannot mirror.
+  const stripBrowserOnlyHeaders = (h: Record<string, unknown>) => {
+    const { priority: _priority, ...rest } = h
+    return rest
+  }
+
   test('sended correctly', async () => {
     const reference = await fetch(srv.echoHeaders()).then((r) => r.json())
     const result = await extendedFetch(srv.echoHeaders()).then((r) => r.json())
-    expect(reference).toEqual(result)
+    expect(stripBrowserOnlyHeaders(reference)).toEqual(
+      stripBrowserOnlyHeaders(result)
+    )
   })
 
   test('parsed correctly', async () => {
@@ -81,7 +90,9 @@ describe('Headers', () => {
       headers,
     }).then((r) => r.json())
 
-    expect(reference).toEqual(result)
+    expect(stripBrowserOnlyHeaders(reference)).toEqual(
+      stripBrowserOnlyHeaders(result)
+    )
   })
 
   test('throw error for bad char in name', async () => {
@@ -92,8 +103,12 @@ describe('Headers', () => {
         },
       })
 
+    // Error message text differs across engines:
+    //   Chromium: "Failed to read the 'headers' property…"
+    //   Firefox:  "Request constructor: Cannot convert …"
+    //   WebKit:   "Type error"
     await expect(() => request()).rejects.toThrowError(
-      /Failed to read the 'headers' property/
+      /Failed to read the 'headers' property|Cannot convert|Type error/i
     )
   })
 
@@ -115,7 +130,9 @@ describe('Headers', () => {
       const result = await extendedFetch(srv.echoHeaders(), {
         credentials: 'include',
       }).then((r) => r.json())
-      expect(reference).toEqual(result)
+      expect(stripBrowserOnlyHeaders(reference)).toEqual(
+        stripBrowserOnlyHeaders(result)
+      )
       expect(reference.cookie).toEqual(cookie.value)
     })
 
@@ -126,7 +143,9 @@ describe('Headers', () => {
       const result = await extendedFetch(srv.echoHeaders(), {
         credentials: 'omit',
       }).then((r) => r.json())
-      expect(reference).toEqual(result)
+      expect(stripBrowserOnlyHeaders(reference)).toEqual(
+        stripBrowserOnlyHeaders(result)
+      )
       expect(reference.cookie).toBeUndefined()
     })
   })
