@@ -158,10 +158,16 @@ export const extendedFetch = (
       xhr.responseType = 'blob'
     }
 
-    // Set Headers
-    request.headers.forEach((value, name) =>
+    // Set Headers.
+    // For FormData bodies, skip Content-Type: `new Request(...)` auto-populated it with the
+    // boundary it computed, but `xhr.send(formData)` will re-encode the body with its own
+    // boundary. Forwarding the Request's Content-Type leaves header and body boundaries out
+    // of sync — servers then fail to parse the multipart payload.
+    const isFormDataBody = initBody instanceof FormData
+    request.headers.forEach((value, name) => {
+      if (isFormDataBody && name.toLowerCase() === 'content-type') return
       xhr.setRequestHeader(name, value)
-    )
+    })
 
     // Handle abort controller signal
     if (request.signal) {

@@ -7,7 +7,17 @@ const port = Number(rawPort)
 const requestHandler = (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', `http://${constants.TEST_SRV_HOST}`)
   res.setHeader('Access-Control-Allow-Credentials', true)
-  res.setHeader('Access-Control-Allow-Headers', constants.ALLOWED_HEADERS.join(', '))
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    [...constants.ALLOWED_HEADERS, 'Content-Type'].join(', ')
+  )
+
+  if (req.method === 'OPTIONS') {
+    res.writeHead(204)
+    res.end()
+    return
+  }
 
   try {
     switch (req.url) {
@@ -21,7 +31,21 @@ const requestHandler = (req, res) => {
         res.end(JSON.stringify(req.headers))
         return
 
-      case '/echo-body':
+      case '/echo-body': {
+        const chunks = []
+        req.on('data', (chunk) => chunks.push(chunk))
+        req.on('end', () => {
+          res.writeHead(200, { 'Content-Type': 'application/json' })
+          res.end(
+            JSON.stringify({
+              'content-type': req.headers['content-type'] ?? null,
+              body: Buffer.concat(chunks).toString('utf8'),
+            })
+          )
+        })
+        return
+      }
+
       case '/timeout-error':
       case '/throw-error':
       default:
