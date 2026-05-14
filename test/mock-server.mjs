@@ -32,13 +32,18 @@ const requestHandler = (req, res) => {
         const chunks = [];
         req.on("data", (chunk) => chunks.push(chunk));
         req.on("end", () => {
-          res.writeHead(200, { "Content-Type": "application/json" });
-          res.end(
-            JSON.stringify({
-              "content-type": req.headers["content-type"] ?? null,
-              body: Buffer.concat(chunks).toString("utf8"),
-            }),
-          );
+          // Set Content-Length explicitly so the response isn't chunked.
+          // Without it, XHR's `progress` events report `lengthComputable=false`
+          // and download-progress callbacks can't compute a ratio.
+          const payload = JSON.stringify({
+            "content-type": req.headers["content-type"] ?? null,
+            body: Buffer.concat(chunks).toString("utf8"),
+          });
+          res.writeHead(200, {
+            "Content-Type": "application/json",
+            "Content-Length": Buffer.byteLength(payload),
+          });
+          res.end(payload);
         });
         return;
       }

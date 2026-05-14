@@ -57,7 +57,17 @@ describe('Payload', () => {
     expect(result.body).toContain('hello world')
   })
 
-  test.todo('can send and receive blob payload', async () => {})
+  test('can send and receive blob payload', async () => {
+    const blob = new Blob(['hello world'], { type: 'text/plain' })
+
+    const result = await extendedFetch(srv.echoBody(), {
+      method: 'POST',
+      body: blob,
+    }).then((r) => r.json())
+
+    expect(result['content-type']).toContain('text/plain')
+    expect(result.body).toBe('hello world')
+  })
 })
 
 describe('Headers', () => {
@@ -152,8 +162,54 @@ describe('Headers', () => {
 })
 
 describe('Progress', () => {
-  test.todo('onUploadProgress', () => {})
-  test.todo('onDownloadProgress', () => {})
+  // Use a payload big enough that browsers actually emit `progress` events
+  // instead of jumping straight from `loadstart` to `load`. 1 MiB is a safe
+  // bet across chromium/firefox/webkit on localhost.
+  const PAYLOAD_SIZE = 1024 * 1024
+  const makePayload = () =>
+    new Blob(['a'.repeat(PAYLOAD_SIZE)], { type: 'text/plain' })
+
+  test('onUploadProgress', async () => {
+    const events: { progress: number; bytes: number }[] = []
+
+    await extendedFetch(
+      srv.echoBody(),
+      { method: 'POST', body: makePayload() },
+      { onUploadProgress: (e) => events.push(e) }
+    )
+
+    expect(events.length).toBeGreaterThan(0)
+    for (const e of events) {
+      expect(e.progress).toBeGreaterThanOrEqual(0)
+      expect(e.progress).toBeLessThanOrEqual(1)
+      expect(e.bytes).toBeGreaterThan(0)
+    }
+    const last = events.at(-1)!
+    expect(last.progress).toBe(1)
+    expect(last.bytes).toBe(PAYLOAD_SIZE)
+  })
+
+  test('onDownloadProgress', async () => {
+    const events: { progress: number; bytes: number }[] = []
+
+    // `/echo-body` returns a JSON envelope containing the uploaded body, so a
+    // sizable POST guarantees a sizable response with a known Content-Length.
+    const response = await extendedFetch(
+      srv.echoBody(),
+      { method: 'POST', body: makePayload() },
+      { onDownloadProgress: (e) => events.push(e) }
+    )
+    await response.blob()
+
+    expect(events.length).toBeGreaterThan(0)
+    for (const e of events) {
+      expect(e.progress).toBeGreaterThanOrEqual(0)
+      expect(e.progress).toBeLessThanOrEqual(1)
+      expect(e.bytes).toBeGreaterThan(0)
+    }
+    const last = events.at(-1)!
+    expect(last.progress).toBe(1)
+  })
 })
 
 describe('Abort', () => {
