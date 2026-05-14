@@ -1,0 +1,9 @@
+# Playwright's official image bundles browsers + matching Ubuntu system libs
+# (libicu, libjpeg-turbo, libnss3, ...), avoiding the Fedora/Ubuntu lib version
+# mismatch when running Playwright from a non-Ubuntu host.
+# Tag must match the installed `playwright` npm package version.
+FROM mcr.microsoft.com/playwright:v1.60.0-noble
+
+RUN corepack enable
+
+WORKDIR /app

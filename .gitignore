@@ -1,3 +1,5 @@
 node_modules
 dist
 coverage
+.pnpm-store/v10/
+.vitest-attachments/

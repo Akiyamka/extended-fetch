@@ -28,7 +28,8 @@
   "scripts": {
     "test": "pnpm run /^test:[^:]*$/",
     "test:types": "tsc  --project \"./lib/tsconfig.json\" --noEmit",
-    "test:e2e": "vitest run",
+    "test:e2e": "docker build -t extended-fetch-test - < Containerfile.test && docker run --rm --ipc=host -v \"$PWD\":/app:Z -v extended-fetch-node-modules:/app/node_modules extended-fetch-test sh -c 'pnpm install --frozen-lockfile && pnpm exec vitest run'",
+    "test:e2e:local": "vitest run",
     "mock": "node ./test/mock-server.mjs",
     "dev": "vite",
     "build": "tsc --project \"./lib/tsconfig.json\"",
@@ -45,13 +46,15 @@
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^20.12.8",
-    "@vitest/browser": "^4.1.6 ",
-    "@vitest/coverage-istanbul": "^: 4.1.6",
+    "@vitest/browser": "^4.1.6",
+    "@vitest/browser-playwright": "^4.1.6",
+    "@vitest/coverage-istanbul": "^4.1.6",
+    "playwright": "^1.60.0",
     "prettier": "^3.8.3",
+    "serve": "^14.2.6",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.6",
-    "webdriverio": "^9.27.1",
-    "serve": "^14.2.6"
+    "vite": "^8.0.13",
+    "vitest": "^4.1.6"
   },
   "packageManager": "pnpm@10.29.3+sha512.498e1fb4cca5aa06c1dcf2611e6fafc50972ffe7189998c409e90de74566444298ffe43e6cd2acdc775ba1aa7cc5e092a8b7054c811ba8c5770f84693d33d2dc"
 }

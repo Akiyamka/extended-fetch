@@ -172,15 +172,14 @@ export const extendedFetch = (
     // Set Headers
     const isFormDataBody = Object.prototype.toString.call(initBody) === '[object FormData]';
     request.headers.forEach((value, name) => {
-      if (isFormDataBody && name.toLowerCase() === 'content-type') {
-        // When we pass FormData in `new Request()` body, it generates a boundary and
-        // sets the header, like:
-        //   "content-type: multipart/form-data; boundary=----WebKitFormBoundaryABC123"
-        // Then `xhr.send(FormData)` does the same thing a second time with its OWN
-        // boundary, but does NOT overwrite the header if Content-Type is already set.
-        // Result: boundary in the header != boundary in the body, and the server
-        // fails to parse the multipart payload. So we skip this header from Request
-      }
+      // When we pass FormData in `new Request()` body, it generates a boundary and
+      // sets the header, like:
+      //   "content-type: multipart/form-data; boundary=----WebKitFormBoundaryABC123"
+      // Then `xhr.send(FormData)` does the same thing a second time with its OWN
+      // boundary, but does NOT overwrite the header if Content-Type is already set.
+      // Result: boundary in the header != boundary in the body, and the server
+      // fails to parse the multipart payload. So we skip this header from Request.
+      if (isFormDataBody && name.toLowerCase() === 'content-type') return;
       xhr.setRequestHeader(name, value);
     })
 
