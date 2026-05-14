@@ -1,5 +1,6 @@
-import http from "node:http";
+import https from "node:https";
 import constants from "./constants.json" with { type: "json" };
+import { getDevCert } from "./dev-cert.mjs";
 
 const [host, rawPort = "80"] = constants.ECHO_SRV_HOST.split(":");
 const port = Number(rawPort);
@@ -7,7 +8,7 @@ const port = Number(rawPort);
 const requestHandler = (req, res) => {
   res.setHeader(
     "Access-Control-Allow-Origin",
-    `http://${constants.TEST_SRV_HOST}`,
+    `https://${constants.TEST_SRV_HOST}`,
   );
   res.setHeader("Access-Control-Allow-Credentials", true);
   res.setHeader(
@@ -55,12 +56,12 @@ const requestHandler = (req, res) => {
   }
 };
 
-export const createTestServer = () => http.createServer(requestHandler);
+export const createTestServer = async () =>
+  https.createServer(await getDevCert(), requestHandler);
 
-export const startTestServer = () =>
-  new Promise((resolve, reject) => {
-    const server = createTestServer();
-
+export const startTestServer = async () => {
+  const server = await createTestServer();
+  return new Promise((resolve, reject) => {
     const onError = (error) => reject(error);
     server.once("error", onError);
 
@@ -70,3 +71,4 @@ export const startTestServer = () =>
       resolve({ server, host, port });
     });
   });
+};

@@ -28,7 +28,11 @@ export class Cookie {
 
   constructor(key: string, val: string){
     this.#payload = `${key}=${val}`;
-    this.#raw = `${this.#payload};SameSite=None;domain=localhost;path=/;Secure`;
+    // No explicit `domain=` — WebKit rejects `document.cookie` writes whose
+    // `domain` attribute isn't a registrable domain (and `localhost` isn't
+    // under any public suffix). Omitting the attribute scopes the cookie to
+    // the document host, which is what every browser already does by default.
+    this.#raw = `${this.#payload};SameSite=None;path=/;Secure`;
     document.cookie = this.#raw;
   }
   

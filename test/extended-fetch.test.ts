@@ -4,7 +4,7 @@ import { Cookie, DevServerClient } from '../lib/utils'
 import { ALLOWED_HEADERS, ECHO_SRV_HOST, CHECK_PHRASE } from './constants.json'
 
 const [host, port = 80] = ECHO_SRV_HOST.split(':')
-const srv = new DevServerClient(`http://${host}:${port}`)
+const srv = new DevServerClient(`https://${host}:${port}`)
 
 describe('Check test env', () => {
   test('XMLHttpRequest available', () => {
