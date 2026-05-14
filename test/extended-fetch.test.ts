@@ -1,11 +1,7 @@
 import { beforeEach, describe, expect, test } from 'vitest'
 import { extendedFetch, isAbortError } from '../lib/extended-fetch'
 import { Cookie, DevServerClient } from '../lib/utils'
-import {
-  ALLOWED_HEADERS,
-  ECHO_SRV_HOST,
-  CHECK_PHRASE,
-} from './constants.json'
+import { ALLOWED_HEADERS, ECHO_SRV_HOST, CHECK_PHRASE } from './constants.json'
 
 const [host, port = 80] = ECHO_SRV_HOST.split(':')
 const srv = new DevServerClient(`http://${host}:${port}`)
@@ -26,11 +22,42 @@ describe('Check test env', () => {
 })
 
 describe('Payload', () => {
-  test.todo('can send and receive multipart payload', async () => {
+  test('can send and receive multipart payload', async () => {
+    const form = new FormData()
+    form.append('field', 'value')
+    form.append(
+      'file',
+      new Blob(['hello world'], { type: 'text/plain' }),
+      'hello.txt'
+    )
+
+    const result = await extendedFetch(srv.echoBody(), {
+      method: 'POST',
+      body: form,
+    }).then((r) => r.json())
+
+    // The boundary declared in Content-Type must actually appear in the body —
+    // otherwise the server cannot find the parts. This is the regression guard
+    // for the FormData boundary mismatch: previously `new Request(...)` populated
+    // Content-Type with boundary A, then `xhr.send(formData)` re-encoded the body
+    // with boundary B, leaving header and body out of sync.
+    const contentType: string = result['content-type']
+    const match = /boundary=(.+)$/.exec(contentType)
+    expect(
+      match,
+      'Content-Type must declare a multipart boundary'
+    ).not.toBeNull()
+    const boundary = match![1]
+
+    expect(result.body).toContain(`--${boundary}`)
+    expect(result.body).toContain('name="field"')
+    expect(result.body).toContain('value')
+    expect(result.body).toContain('name="file"')
+    expect(result.body).toContain('filename="hello.txt"')
+    expect(result.body).toContain('hello world')
   })
 
-  test.todo('can send and receive blob payload', async () => {
-  })
+  test.todo('can send and receive blob payload', async () => {})
 })
 
 describe('Headers', () => {
@@ -65,7 +92,9 @@ describe('Headers', () => {
         },
       })
 
-    await expect(() => request()).rejects.toThrowError(/Failed to read the 'headers' property/)
+    await expect(() => request()).rejects.toThrowError(
+      /Failed to read the 'headers' property/
+    )
   })
 
   describe('credentials', () => {
@@ -132,4 +161,3 @@ describe('Utils', () => {
     expect(isAbortError(result)).toBe(true)
   })
 })
-

@@ -1,5 +1,9 @@
 import type { ExtendedFetchPreferences } from './types'
-import { ERROR_MSG_ABORT, ERROR_MSG_NETWORK, ERROR_MSG_TIMEOUT } from './constants';
+import {
+  ERROR_MSG_ABORT,
+  ERROR_MSG_NETWORK,
+  ERROR_MSG_TIMEOUT,
+} from './constants'
 const g = globalThis
 
 // ? Do we really need that? Seems Request already done this for us
@@ -129,7 +133,10 @@ export const extendedFetch = (
 
     xhr.onprogress = (event) => {
       if (event.lengthComputable) {
-        pref?.onDownloadProgress?.({ progress: event.loaded / event.total, bytes: event.loaded })
+        pref?.onDownloadProgress?.({
+          progress: event.loaded / event.total,
+          bytes: event.loaded,
+        })
       }
     }
     // Meet "Simple request" definition to avoid CORS preflight requests
@@ -137,13 +144,15 @@ export const extendedFetch = (
     if (pref?.onUploadProgress) {
       xhr.upload.addEventListener('progress', (event) => {
         if (event.lengthComputable) {
-          pref?.onUploadProgress?.({ progress: event.loaded / event.total, bytes: event.loaded })
+          pref?.onUploadProgress?.({
+            progress: event.loaded / event.total,
+            bytes: event.loaded,
+          })
         } else {
           console.debug('[Extended Fetch]: length not computable')
         }
       })
     }
-  
 
     xhr.open(request.method, fixUrl(request.url), true)
 
@@ -158,10 +167,22 @@ export const extendedFetch = (
       xhr.responseType = 'blob'
     }
 
+
+
     // Set Headers
-    request.headers.forEach((value, name) =>
-      xhr.setRequestHeader(name, value)
-    )
+    const isFormDataBody = Object.prototype.toString.call(initBody) === '[object FormData]';
+    request.headers.forEach((value, name) => {
+      if (isFormDataBody && name.toLowerCase() === 'content-type') {
+        // When we pass FormData in `new Request()` body, it generates a boundary and
+        // sets the header, like:
+        //   "content-type: multipart/form-data; boundary=----WebKitFormBoundaryABC123"
+        // Then `xhr.send(FormData)` does the same thing a second time with its OWN
+        // boundary, but does NOT overwrite the header if Content-Type is already set.
+        // Result: boundary in the header != boundary in the body, and the server
+        // fails to parse the multipart payload. So we skip this header from Request
+      }
+      xhr.setRequestHeader(name, value);
+    })
 
     // Handle abort controller signal
     if (request.signal) {
@@ -193,4 +214,4 @@ export const isAbortError = (err: unknown) =>
   // https://dom.spec.whatwg.org/#aborting-ongoing-activities-example
   err.name === ERROR_MSG_ABORT
 
-  export type { ExtendedFetchPreferences } from './types';
+export type { ExtendedFetchPreferences } from './types'
