@@ -4,7 +4,7 @@ export class DevServerClient {
   readyCheck() {
     return this.host + '/rdycheck'
   }
-  
+
   echoHeaders() {
     return this.host + '/echo-headers'
   }
@@ -13,7 +13,7 @@ export class DevServerClient {
     return this.host + '/echo-body'
   }
 
-  throwError(error: number, payload?: string) {
+  throwError(_error: number, _payload?: string) {
     return this.host + '/throw-error'
   }
 
@@ -35,7 +35,7 @@ export class Cookie {
     this.#raw = `${this.#payload};SameSite=None;path=/;Secure`;
     document.cookie = this.#raw;
   }
-  
+
   destroy() {
     document.cookie = `${this.#raw};expires=Thu, 01 Jan 1970 00:00:01`;
   }

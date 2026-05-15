@@ -9,12 +9,12 @@
     "noFallthroughCasesInSwitch": true,
     "strict": true,
     "skipLibCheck": true,
-    "moduleResolution": "Bundler",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "lib": ["DOM", "ESNext"],
     "target": "ES2020",
-    "module": "ESNext",
     "outDir": "../dist"
   },
 }

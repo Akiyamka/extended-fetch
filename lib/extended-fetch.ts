@@ -1,9 +1,9 @@
-import type { ExtendedFetchPreferences } from './types'
+import type { ExtendedFetchPreferences } from './types.js'
 import {
   ERROR_MSG_ABORT,
   ERROR_MSG_NETWORK,
   ERROR_MSG_TIMEOUT,
-} from './constants'
+} from './constants.js'
 const g = globalThis
 
 // ? Do we really need that? Seems Request already done this for us
@@ -213,4 +213,4 @@ export const isAbortError = (err: unknown) =>
   // https://dom.spec.whatwg.org/#aborting-ongoing-activities-example
   err.name === ERROR_MSG_ABORT
 
-export type { ExtendedFetchPreferences } from './types'
+export type { ExtendedFetchPreferences } from './types.js'

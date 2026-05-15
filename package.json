@@ -11,17 +11,12 @@
     "dist"
   ],
   "types": "./dist/extended-fetch.d.ts",
-  "main": "./dist/extended-fetch.cjs",
   "module": "./dist/extended-fetch.js",
   "exports": {
     ".": {
       "import": {
         "types": "./dist/extended-fetch.d.ts",
         "default": "./dist/extended-fetch.js"
-      },
-      "require": {
-        "types": "./dist/extended-fetch.d.ts",
-        "default": "./dist/extended-fetch.cjs"
       }
     }
   },
